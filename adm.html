@@ -1,0 +1,65 @@
+
+<head>
+  <title>Envoy Admin</title>
+  <link rel='shortcut icon' type='image/png' href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAH9SURBVEhL7ZRdTttAFIUrUFaAX5w9gIhgUfzshFRK+gIbaVbAzwaqCly1dSpKk5A485/YCdXpHTB4BsdgVe0bD0cZ3Xsm38yZ8byTUuJ/6g3wqqoBrBhPTzmmLfptMbAzttJTpTKAF2MWC7ADCdNIwXZpvMMwayiIwwS874CcOc9VuQPR1dBBChPMITpFXXU45hukIIH6kHhzVqkEYB8F5HYGvZ5B7EvwmHt9K/59CrU3QbY2RNYaQPYmJc+jPIBICNCcg20ZsAsCPfbcrFlRF+cJZpvXSJt9yMTxO/IAzJrCOfhJXiOgFEX/SbZmezTWxyNk4Q9anHMmjnzAhEyhAW8LCE6wl26J7ZFHH1FMYQxh567weQBOO1AW8D7P/UXAQySq/QvL8Fu9HfCEw4SKALm5BkC3bwjwhSKrA5hYAMXTJnPNiMyRBVzVjcgCyHiSm+8P+WGlnmwtP2RzbCMiQJ0d2KtmmmPorRHEhfMROVfTG5/fYrF5iWXzE80tfy9WPsCqx5Buj7FYH0LvDyHiqd+3otpsr4/fa5+xbEVQPfrYnntylQG5VGeMLBhgEfyE7o6e6qYzwHIjwl0QwXSvvTmrVAY4D5ddvT64wV0jRrr7FekO/XEjwuwwhuw7Ef7NY+dlfXpLb06EtHUJdVbsxvNUqBrwj/QGeEUSfwBAkmWHn5Bb/gAAAABJRU5'/>
+  <style>
+    .home-table {
+      font-family: sans-serif;
+      font-size: medium;
+      border-collapse: collapse;
+    }
+
+    .home-row:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+    .home-data {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    .home-form {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <table class='home-table'>
+    <thead>
+      <th class='home-data'>Command</th>
+      <th class='home-data'>Description</th>
+     </thead>
+     <tbody>
+<tr class='home-row'><td class='home-data'><a href='certs'>certs</a></td><td class='home-data'>print certs on machine</td></tr>
+<tr class='home-row'><td class='home-data'><a href='clusters'>clusters</a></td><td class='home-data'>upstream cluster status</td></tr>
+<tr class='home-row'><td class='home-data'><a href='config_dump'>config_dump</a></td><td class='home-data'>dump current Envoy configs (experimental)</td></tr>
+<tr class='home-row'><td class='home-data'><a href='contention'>contention</a></td><td class='home-data'>dump current Envoy mutex contention stats (if enabled)</td></tr>
+<tr class='home-row'><td class='home-data'><form action='cpuprofiler' method='post' class='home-form'><button>cpuprofiler</button></form></td><td class='home-data'>enable/disable the CPU profiler</td></tr>
+<tr class='home-row'><td class='home-data'><form action='drain_listeners' method='post' class='home-form'><button>drain_listeners</button></form></td><td class='home-data'>drain listeners</td></tr>
+<tr class='home-row'><td class='home-data'><form action='healthcheck/fail' method='post' class='home-form'><button>healthcheck/fail</button></form></td><td class='home-data'>cause the server to fail health checks</td></tr>
+<tr class='home-row'><td class='home-data'><form action='healthcheck/ok' method='post' class='home-form'><button>healthcheck/ok</button></form></td><td class='home-data'>cause the server to pass health checks</td></tr>
+<tr class='home-row'><td class='home-data'><form action='heapprofiler' method='post' class='home-form'><button>heapprofiler</button></form></td><td class='home-data'>enable/disable the heap profiler</td></tr>
+<tr class='home-row'><td class='home-data'><a href='help'>help</a></td><td class='home-data'>print out list of admin commands</td></tr>
+<tr class='home-row'><td class='home-data'><a href='hot_restart_version'>hot_restart_version</a></td><td class='home-data'>print the hot restart compatibility version</td></tr>
+<tr class='home-row'><td class='home-data'><a href='init_dump'>init_dump</a></td><td class='home-data'>dump current Envoy init manager information (experimental)</td></tr>
+<tr class='home-row'><td class='home-data'><a href='listeners'>listeners</a></td><td class='home-data'>print listener info</td></tr>
+<tr class='home-row'><td class='home-data'><form action='logging' method='post' class='home-form'><button>logging</button></form></td><td class='home-data'>query/change logging levels</td></tr>
+<tr class='home-row'><td class='home-data'><a href='memory'>memory</a></td><td class='home-data'>print current allocation/heap usage</td></tr>
+<tr class='home-row'><td class='home-data'><form action='quitquitquit' method='post' class='home-form'><button>quitquitquit</button></form></td><td class='home-data'>exit the server</td></tr>
+<tr class='home-row'><td class='home-data'><a href='ready'>ready</a></td><td class='home-data'>print server state, return 200 if LIVE, otherwise return 503</td></tr>
+<tr class='home-row'><td class='home-data'><form action='reopen_logs' method='post' class='home-form'><button>reopen_logs</button></form></td><td class='home-data'>reopen access logs</td></tr>
+<tr class='home-row'><td class='home-data'><form action='reset_counters' method='post' class='home-form'><button>reset_counters</button></form></td><td class='home-data'>reset all counters to zero</td></tr>
+<tr class='home-row'><td class='home-data'><a href='runtime'>runtime</a></td><td class='home-data'>print runtime values</td></tr>
+<tr class='home-row'><td class='home-data'><form action='runtime_modify' method='post' class='home-form'><button>runtime_modify</button></form></td><td class='home-data'>modify runtime values</td></tr>
+<tr class='home-row'><td class='home-data'><a href='server_info'>server_info</a></td><td class='home-data'>print server version/status information</td></tr>
+<tr class='home-row'><td class='home-data'><a href='stats'>stats</a></td><td class='home-data'>print server stats</td></tr>
+<tr class='home-row'><td class='home-data'><a href='stats/prometheus'>stats/prometheus</a></td><td class='home-data'>print server stats in prometheus format</td></tr>
+<tr class='home-row'><td class='home-data'><a href='stats/recentlookups'>stats/recentlookups</a></td><td class='home-data'>Show recent stat-name lookups</td></tr>
+<tr class='home-row'><td class='home-data'><form action='stats/recentlookups/clear' method='post' class='home-form'><button>stats/recentlookups/clear</button></form></td><td class='home-data'>clear list of stat-name lookups and counter</td></tr>
+<tr class='home-row'><td class='home-data'><form action='stats/recentlookups/disable' method='post' class='home-form'><button>stats/recentlookups/disable</button></form></td><td class='home-data'>disable recording of reset stat-name lookup names</td></tr>
+<tr class='home-row'><td class='home-data'><form action='stats/recentlookups/enable' method='post' class='home-form'><button>stats/recentlookups/enable</button></form></td><td class='home-data'>enable recording of reset stat-name lookup names</td></tr>
+
+    </tbody>
+  </table>
+</body>
