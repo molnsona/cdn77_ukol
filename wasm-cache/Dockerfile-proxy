@@ -1,0 +1,5 @@
+FROM envoyproxy/envoy:dev
+COPY ./envoy.yaml /etc/envoy.yaml
+COPY ./lib/envoy_wasm_cache.wasm /lib/envoy_wasm_cache.wasm
+RUN chmod go+r /etc/envoy.yaml /lib/envoy_wasm_cache.wasm
+CMD ["/usr/local/bin/envoy", "-c", "/etc/envoy.yaml", "--service-cluster", "proxy","--concurrency 1"]
