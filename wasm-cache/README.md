@@ -46,8 +46,13 @@ curl -s http://localhost:8002
 curl -s http://localhost:8003
 ```
 the Keys map and Cache with size 3 look like this:
+
+Keys:
 ![keys](img/keys.png) 
-| ![cache0](img/cache0.png) |![cache1](img/cache1.png) |![cache2](img/cache2.png)
+Cache:
+|  [0] |   [1]  | [2]|
+| ------- | ------------ | ------- |
+| ![cache0](img/cache0.png)| ![cache1](img/cache1.png) |![cache2](img/cache2.png)|
 
 This example shows the circularity of the buffer (FIFO policy), where the fist request to localhost:8000 is replaced by the last request to localhost:8003. When you send request to any of the 8001/8002/8003 port, you will get a body with the corresponding "Hello from cache <`req_counter`>" at the end. But if you send request to port 8000 you will get body from the server without "Hello..." part and it will be cached at the index [1] of the cache.
 
