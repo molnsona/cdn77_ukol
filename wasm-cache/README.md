@@ -25,15 +25,15 @@ sudo docker compose stop
 sudo docker compose ps
 ```
 ## Test
-Records in the cache have appended string at the of the body: "Hello from cache " + `req_counter`, `req_counter` is a global variable that is increased with every client request and therefore it is used to check that the body is returned from cache and stays the same for the whole duration of the record lifetime. If the body is returned from the server, not the cache, the string is missing.
+Records in the cache have a string appended at the end of the body: "Hello from cache " + `req_counter`, `req_counter` is a global variable that is increased with every client request and therefore it is used to check that the body is returned from cache and stays the same for the whole duration of the record lifetime. If the body is returned from the server, not the cache, the string is missing.
 
-To test that the bodies are returned from the cache you can repeatedly call the command below. First time, the body will be normal and the followed times the body will have the appended string at the end.
+To test that the bodies are returned from the cache you can repeatedly call the command below. The first time, the body will be normal and the following times the body will have the appended string at the end.
 ```sh
 curl -s http://localhost:8000
 ```
-Listeners listen on ports 8000, 8001, 8002, 8003 and the size of the ring buffer is 3.
+Listeners listen on ports 8000, 8001, 8002, and 8003 and the size of the ring buffer is 3.
 
-The cache and keys map is dumped in the console each time the request is called so you can look at the console output and see how the cache is gradually filled with new records.
+The cache and a keys map are dumped in the console each time the request is called, so you can look at the console output and see how the cache is gradually filled with new records.
 
 To test the FIFO policy, you can call the command above with all different ports and look at the cache in the log console output, as shown in the example below.  
 
@@ -57,7 +57,7 @@ Cache:
 | ------- | ------------ | ------- |
 | ![cache0](img/cache0.png)| ![cache1](img/cache1.png) |![cache2](img/cache2.png)|
 
-This example shows the circularity of the buffer (FIFO policy), where the fist request to localhost:8000 is replaced by the last request to localhost:8003. When you send request to any of the 8001/8002/8003 port, you will get a body with the corresponding "Hello from cache <`req_counter`>" at the end. But if you send request to port 8000 you will get body from the server without "Hello..." part and it will be cached at the index [1] of the cache.
+This example shows the circularity of the buffer (FIFO policy), where the first request to localhost:8000 is replaced by the last request to localhost:8003. When you send a request to any of 8001/8002/8003 ports, you will get a body with the corresponding "Hello from cache <`req_counter`>" at the end. But if you send a request to port 8000 you will get a body from the server without the "Hello..." part and it will be cached at the index [1] of the cache.
 
 ```sh
 # Served from cache
