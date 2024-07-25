@@ -23,7 +23,7 @@ The first thing I had to solve was where to put the actual cache. The `Context` 
 After I collected and stored data correctly in the cache, I stumbled upon yet another problem. How to stop the whole filter chain when a request is already in the cache and return the cached value? Returning only `FilterHeadersStatus::StopIteration` or similar did not work, because it froze the filter chain and waited until the continue was called. So I almost lost the hope, that this path is the right one (which is not, I found out later) but after a deep dive into the [proxy-wasm Github repo](https://github.com/proxy-wasm/proxy-wasm-cpp-sdk/tree/main) I found a function called `sendLocalResponse()` that saved me. In combination with the return status it worked as I wanted. But as I mentioned above, it doesn't work as a shared cache for multiple worker threads because each worker thread has its own copy. With this knowledge the request coalescing is not possible. But there exist a Wasm service which runs on the main thread and can communicate with worker threads via Shared Memory or Message Queue. So this would be a good next step to explore.  
 
 ## Solution
-The solution implements only the most basic cache, not the request coalescing (as it was reasoned in the [previous section](#wasm-c-filter) and because of the lack of time). The cache is implemented as a `envoy.filters.http.wasm` filter with the use of [proxy-wasm-cpp-sdk](https://github.com/proxy-wasm/proxy-wasm-cpp-sdk/tree/main) from the [Wasm C++ filter example](https://www.envoyproxy.io/docs/envoy/v1.30.4/start/sandboxes/wasm-cc). In the method `onRequestHeaders()` the cache is checked for the record, if there is no record, a new record is created, otherwise, the response is send back by `sendLocalResponse()` function. A new record is created in `onRequestHeaders()` with a header and an empty body. `onResponseBody()` function fills the body of the newest entry in the cache with the filled header and an empty body (this is correct because it is a ring buffer cache and there is only one thread manipulating with the cache). But this approach works only if the `onRequestHeaders()` and `onResponseBody()` methods are called one after the other - it is not crash-proof.
+The solution implements only the most basic cache, not the request coalescing (as it was reasoned in the [previous section](#wasm-c-filter) and because of the lack of time). The cache is implemented as an HTTP `envoy.filters.http.wasm` filter with the use of [proxy-wasm-cpp-sdk](https://github.com/proxy-wasm/proxy-wasm-cpp-sdk/tree/main) from the [Wasm C++ filter example](https://www.envoyproxy.io/docs/envoy/v1.30.4/start/sandboxes/wasm-cc). In `onRequestHeaders()` the cache is checked for the record, if the cache already contains the request, the response is sent from the cache by `sendLocalResponse()`, otherwise, a new record is created. A new record is created in `onRequestHeaders()` with a header and an empty body. `onResponseBody()` fills the body of the newest entry in the cache with the filled header and an empty body (this is correct because it is a ring buffer cache and there is only one thread manipulating with the cache). But this approach works only if the `onRequestHeaders()` and `onResponseBody()` methods are called one after the other - it is not crash-proof.
 
 ### Envoy config
 There are 4 listeners listening on `localhost` on ports `8000, 8001, 8002, 8003`. All of them use the Wasm cache filter and are routed to the echo server. 
@@ -59,19 +59,19 @@ cat README.md
 Check out the Test section in the `wasm-cache/README.md`.
 
 ## Timeline
-| Day    | Topic     | Pomodoros (35 min segments)|
-| ------- | ------------ | ------- |
-| 16.7. (Tue)| Envoy documentation | 12 |
-| 17.7. (Wed)| Envoy documentation | 12 |
-| 18.7. (Thu)| Envoy documentation | 5,5|
-| | Envoy sandboxes | 6,5 |
-| 19.7. (Fri)| Envoy sandboxes | 6 |
-| 20.7. (Sat)| Setting up the environment | 9 |
-| 21.7. (Sun)| Day off| 0 |
-| 22.7. (Mon)| Design & Implementation | 10 |
-| 23.7. (Tue)| Debug & Implementation | 10 |
-| 24.7. (Wed)| Documentation writing | 10 |
-| 25.7. (Thu)| Documentation writing | 10 |
+| Day    | Topic     | 
+| ------- | ------------ | 
+| 16.7. (Tue)| Envoy documentation | 
+| 17.7. (Wed)| Envoy documentation | 
+| 18.7. (Thu)| Envoy documentation | 
+| | Envoy sandboxes | 
+| 19.7. (Fri)| Envoy sandboxes |
+| 20.7. (Sat)| Setting up the environment |
+| 21.7. (Sun)| Day off| 
+| 22.7. (Mon)| Design & Implementation | 
+| 23.7. (Tue)| Debug & Implementation | 
+| 24.7. (Wed)| Documentation writing | 
+| 25.7. (Thu)| Documentation writing | 
 
 ## Problems and challenges
 The biggest challenge for me was to get into the Envoy itself and to find a place that is suitable for the cache implementation. Later in the implementation I had a challenge with stopping the filterchain and return the response right away.
