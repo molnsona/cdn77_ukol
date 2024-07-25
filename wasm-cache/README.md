@@ -48,8 +48,11 @@ curl -s http://localhost:8003
 the Keys map and Cache with size 3 look like this:
 
 Keys:
+
 ![keys](img/keys.png) 
+
 Cache:
+
 |  [0] |   [1]  | [2]|
 | ------- | ------------ | ------- |
 | ![cache0](img/cache0.png)| ![cache1](img/cache1.png) |![cache2](img/cache2.png)|
