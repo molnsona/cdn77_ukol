@@ -22,10 +22,10 @@ struct Key {
 
   std::string get_url() const
   {
-    return scheme + "://" + authority + path;
+    return is_empty() ? "" : scheme + "://" + authority + path;
   }
 
-  bool is_empty() {
+  bool is_empty() const {
     return scheme.empty() && authority.empty() && path.empty();
   }
 };
@@ -65,7 +65,6 @@ public:
   
   ValuePtr add_header(Key k, RBCache* cache);
   void add_body(Value v);
-  void remove_oldest(RBCache* cache);
   Value get_value(ValuePtr p) {return rb[p.ind].second;}
 
   void set_length(size_t l) {length = l; rb.resize(length);}
@@ -79,6 +78,7 @@ private:
   size_t length;
   size_t elems_count;
 
+  void remove_oldest(RBCache* cache);
   bool is_full() {return elems_count == length;}
 };
 
@@ -148,8 +148,6 @@ void RBCache::add_header(Key k)
 void RBCache::add_body(Value v) 
 {
   rb.add_body(v);
-
-  LOG_WARN("ADDDDDDDDDDDDDDDDDDDDDDDDDD BODY:\n" + print_keys() + print_cache());
 }
 
 void RBCache::remove_elem(Key k)
@@ -169,11 +167,11 @@ std::string_view RBCache::get_body(const Key& k)
 }
 
 std::string RBCache::print_keys(){
-  std::string res = "Keys:\n";
+  std::string res = "\n========================================================\nKeys:\n========================================================\n";
   int i = 0;
   for(auto&& k:keys)
   {
-    res += "[" + std::to_string(i) + "]" + " Key: " + k.first.get_url() + " ValuePtr: " + std::to_string(k.second.ind) + "\n";
+    res += "------------------------\n[" + std::to_string(i) + "]\n" + "Key: " + k.first.get_url() + "\nValuePtr: " + std::to_string(k.second.ind) + "\n------------------------\n";
     ++i;
   }
   return res;
@@ -184,11 +182,11 @@ std::string RBCache::print_cache(){
 }
 
 std::string RingBuffer::print_cache() {
-  std::string res = "Cache:\n";
+  std::string res = "\n========================================================\nCache:\n========================================================\n";
   int i = 0;
   for(auto&& elem:rb)
   {
-    res += "[" + std::to_string(i) + "]" + " Key: " + elem.first.get_url() + " body: " + elem.second.body + " date: " + elem.second.date + "\n";
+    res += "------------------------\n[" + std::to_string(i) + "]\n" + "Key: " + elem.first.get_url() + "\nBody: " + elem.second.body /*+ " date: " + elem.second.date*/ + "\n------------------------\n";
     ++i;
   }
   return res;
@@ -290,13 +288,15 @@ FilterDataStatus ExampleContext::onResponseBody(size_t body_buffer_length,
                                                 bool /* end_of_stream */) {
   Value val;
   val.body = getBufferBytes(WasmBufferType::HttpResponseBody, 0, body_buffer_length)->toString() + "Hello from cache " + std::to_string(req_counter) + "\n";
-  LOG_WARN("Body: " + val.body);
   rb_cache.add_body(val);
   return FilterDataStatus::Continue;
 }
 
 void ExampleContext::onDone() { LOG_WARN(std::string("onDone " + std::to_string(id()))); }
 
-void ExampleContext::onLog() { LOG_WARN(std::string("onLog " + std::to_string(id()))); }
+void ExampleContext::onLog() {     
+  LOG_INFO(rb_cache.print_keys() + rb_cache.print_cache());
+  LOG_WARN(std::string("onLog " + std::to_string(id()))); 
+}
 
 void ExampleContext::onDelete() { LOG_WARN(std::string("onDelete " + std::to_string(id()))); }
